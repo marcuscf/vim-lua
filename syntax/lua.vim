@@ -2,7 +2,7 @@
 " Language:	Lua 4.0, Lua 5.0, Lua 5.1, Lua 5.2 and Lua 5.3
 " Maintainer:	Marcus Aurelius Farias <masserahguard-lua 'at' yahoo com>
 " First Author:	Carlos Augusto Teixeira Mendes <cmendes 'at' inf puc-rio br>
-" Last Change:	2015 Apr 05
+" Last Change:	2017 Apr 17
 " Options:	lua_version = 4 or 5
 "		lua_subversion = 0 (for 4.0 or 5.0)
 "				or 1, 2, 3 (for 5.1, 5.2 or 5.3)
@@ -24,7 +24,7 @@ if !exists("lua_version")
   let lua_version = 5
   let lua_subversion = 3
 elseif !exists("lua_subversion")
-  " lua_version exists, but lua_subversion doesn't. So, set it to 0
+  " lua_version exists, but lua_subversion doesn't. In this case set it to 0
   let lua_subversion = 0
 endif
 
@@ -90,6 +90,7 @@ if lua_version > 5 || (lua_version == 5 && lua_subversion >= 2)
   syn match luaLabel "::\I\i*::"
 endif
 syn keyword luaOperator and or not
+
 syn keyword luaConstant nil
 if lua_version > 4
   syn keyword luaConstant true false
