@@ -2,7 +2,7 @@
 " Language:	Lua 4.0, Lua 5.0, Lua 5.1, Lua 5.2 and Lua 5.3
 " Maintainer:	Marcus Aurelius Farias <masserahguard-lua 'at' yahoo com>
 " First Author:	Carlos Augusto Teixeira Mendes <cmendes 'at' inf puc-rio br>
-" Last Change:	2017 Apr 17
+" Last Change:	2017 Apr 18
 " Options:	lua_version = 4 or 5
 "		lua_subversion = 0 (for 4.0 or 5.0)
 "				or 1, 2, 3 (for 5.1, 5.2 or 5.3)
@@ -89,14 +89,24 @@ if lua_version > 5 || (lua_version == 5 && lua_subversion >= 2)
   syn keyword luaStatement goto
   syn match luaLabel "::\I\i*::"
 endif
+
+" operators
 syn keyword luaOperator and or not
+
+if (lua_version == 5 && lua_subversion >= 3) || lua_version > 5
+  syn match luaOperator "[#<>=~^&|*/%+-]\|\.\{2,3}"
+elseif lua_version == 5 && (lua_subversion == 1 || lua_subversion == 2)
+  syn match luaOperator "[#<>=~^*/%+-]\|\.\{2,3}"
+else
+  syn match luaOperator "[<>=~^*/+-]\|\.\{2,3}"
+endif
 
 syn keyword luaConstant nil
 if lua_version > 4
   syn keyword luaConstant true false
 endif
 
-" Strings
+" strings
 syn match  luaSpecial contained #\\[\\abfnrtv'"[\]]\|\\[[:digit:]]\{,3}#
 if lua_version == 5
   if lua_subversion == 0
@@ -117,7 +127,7 @@ syn region luaString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Sp
 " integer number
 syn match luaNumber "\<\d\+\>"
 " floating point number, with dot, optional exponent
-syn match luaNumber  "\<\d\+\.\d*\%([eE][-+]\=\d\+\)\=\>"
+syn match luaNumber  "\<\d\+\.\d*\%([eE][-+]\=\d\+\)\="
 " floating point number, starting with a dot, optional exponent
 syn match luaNumber  "\.\d\+\%([eE][-+]\=\d\+\)\=\>"
 " floating point number, without dot, with exponent
@@ -135,6 +145,10 @@ endif
 " tables
 syn region luaTableBlock transparent matchgroup=luaTable start="{" end="}" contains=TOP,luaStatement
 
+" methods
+syntax match luaFunc ":\@<=\k\+"
+
+" built-in functions
 syn keyword luaFunc assert collectgarbage dofile error next
 syn keyword luaFunc print rawget rawset self tonumber tostring type _VERSION
 
