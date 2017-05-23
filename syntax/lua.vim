@@ -2,7 +2,7 @@
 " Language:	Lua 4.0, Lua 5.0, Lua 5.1, Lua 5.2 and Lua 5.3
 " Maintainer:	Marcus Aurelius Farias <masserahguard-lua 'at' yahoo com>
 " First Author:	Carlos Augusto Teixeira Mendes <cmendes 'at' inf puc-rio br>
-" Last Change:	2017 Apr 18
+" Last Change:	2017 May 22
 " Options:	lua_version = 4 or 5
 "		lua_subversion = 0 (for 4.0 or 5.0)
 "				or 1, 2, 3 (for 5.1, 5.2 or 5.3)
@@ -32,6 +32,21 @@ syn case match
 
 " syncing method
 syn sync minlines=100
+
+if lua_version >= 5
+  syn keyword luaMetaMethod __add __sub __mul __div __pow __unm __concat
+  syn keyword luaMetaMethod __eq __lt __le
+  syn keyword luaMetaMethod __index __newindex __call
+endif
+
+if lua_version > 5 || (lua_version == 5 && lua_subversion >= 1)
+  syn keyword luaMetaMethod __mod __len
+endif
+
+if lua_version > 5 || (lua_version == 5 && lua_subversion >= 3)
+  syn keyword luaMetaMethod __idiv
+  syn keyword luaMetaMethod __band __bor __bxor __bnot __shl __shr
+endif
 
 " catch errors caused by wrong parenthesis and wrong curly brackets or
 " keywords placed outside their respective blocks
@@ -402,6 +417,7 @@ if version >= 508 || !exists("did_lua_syntax_inits")
   HiLink luaCond		Conditional
   HiLink luaCondElse		Conditional
   HiLink luaFunction		Function
+  HiLink luaMetaMethod		Function
   HiLink luaComment		Comment
   HiLink luaTodo		Todo
   HiLink luaTable		Structure
