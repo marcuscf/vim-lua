@@ -33,20 +33,6 @@ syn case match
 " syncing method
 syn sync minlines=100
 
-" Comments
-syn keyword luaTodo            contained TODO FIXME XXX
-syn match   luaComment         "--.*$" contains=luaTodo,@Spell
-if lua_version == 5 && lua_subversion == 0
-  syn region luaComment        matchgroup=luaComment start="--\[\[" end="\]\]" contains=luaTodo,luaInnerComment,@Spell
-  syn region luaInnerComment   contained transparent start="\[\[" end="\]\]"
-elseif lua_version > 5 || (lua_version == 5 && lua_subversion >= 1)
-  " Comments in Lua 5.1: --[[ ... ]], [=[ ... ]=], [===[ ... ]===], etc.
-  syn region luaComment        matchgroup=luaComment start="--\[\z(=*\)\[" end="\]\z1\]" contains=luaTodo,@Spell
-endif
-
-" First line may start with #!
-syn match luaComment "\%^#!.*"
-
 " catch errors caused by wrong parenthesis and wrong curly brackets or
 " keywords placed outside their respective blocks
 
@@ -94,12 +80,26 @@ endif
 syn keyword luaOperator and or not
 
 if (lua_version == 5 && lua_subversion >= 3) || lua_version > 5
-  syn match luaOperator "[#<>=~^&|*/%+-]\|\.\{2,3}"
+  syn match luaSymbolOperator "[#<>=~^&|*/%+-]\|\.\{2,3}"
 elseif lua_version == 5 && (lua_subversion == 1 || lua_subversion == 2)
-  syn match luaOperator "[#<>=~^*/%+-]\|\.\{2,3}"
+  syn match luaSymbolOperator "[#<>=~^*/%+-]\|\.\{2,3}"
 else
-  syn match luaOperator "[<>=~^*/+-]\|\.\{2,3}"
+  syn match luaSymbolOperator "[<>=~^*/+-]\|\.\{2,3}"
 endif
+
+" comments
+syn keyword luaTodo            contained TODO FIXME XXX
+syn match   luaComment         "--.*$" contains=luaTodo,@Spell
+if lua_version == 5 && lua_subversion == 0
+  syn region luaComment        matchgroup=luaComment start="--\[\[" end="\]\]" contains=luaTodo,luaInnerComment,@Spell
+  syn region luaInnerComment   contained transparent start="\[\[" end="\]\]"
+elseif lua_version > 5 || (lua_version == 5 && lua_subversion >= 1)
+  " Comments in Lua 5.1: --[[ ... ]], [=[ ... ]=], [===[ ... ]===], etc.
+  syn region luaComment        matchgroup=luaComment start="--\[\z(=*\)\[" end="\]\z1\]" contains=luaTodo,@Spell
+endif
+
+" first line may start with #!
+syn match luaComment "\%^#!.*"
 
 syn keyword luaConstant nil
 if lua_version > 4
@@ -397,6 +397,7 @@ if version >= 508 || !exists("did_lua_syntax_inits")
   HiLink luaString2		String
   HiLink luaNumber		Number
   HiLink luaOperator		Operator
+  HiLink luaSymbolOperator	luaOperator
   HiLink luaConstant		Constant
   HiLink luaCond		Conditional
   HiLink luaCondElse		Conditional
