@@ -16,14 +16,12 @@ setlocal indentexpr=GetLuaIndent()
 " on the current line ('else' is default and includes 'elseif').
 setlocal indentkeys+=0=end,0=until,}
 
-setlocal autoindent
-
 " Only define the function once.
 if exists("*GetLuaIndent")
   finish
 endif
 
-function s:OpenBracesBalance(line)
+function s:PreviousLineBracesBalance(line)
   let idx = 0
   let depth = 0
 
@@ -35,7 +33,7 @@ function s:OpenBracesBalance(line)
       " Avoid going below zero because
       " a line like this
       " }, {
-      " is not balanced and should trigger indentation
+      " is not balanced and should trigger indentation below
       let depth = depth == 0 ? 0 : depth - 1
     endif
 
@@ -46,14 +44,16 @@ function s:OpenBracesBalance(line)
   return depth
 endfunction
 
-function s:BracesBalance(line)
+function s:CurrentLineBracesBalance(line)
   let idx = 0
   let depth = 0
 
   while idx < len(a:line)
 
     if a:line[idx] ==# "{"
-      let depth += 1
+      " Avoid going above -1
+      " Is this really the best way?
+      let depth = depth == -1 ? -1 : depth + 1
     elseif a:line[idx] ==# "}"
       let depth -= 1
     endif
@@ -89,30 +89,28 @@ function! GetLuaIndent()
     if synIDattr(synID(prevlnum, midx + 1, 1), "name") != "luaComment" && prevline !~ '\<end\>\|\<until\>'
       let ind += &shiftwidth
     endif
-
-    " Subtract a 'shiftwidth' on end, else (and elseif), until
-    " This requires 'indentkeys'.
-    let midx = match(getline(v:lnum), '^\s*\%(end\|else\|until\)')
-    if midx != -1 && synIDattr(synID(v:lnum, midx + 1, 1), "name") != "luaComment"
-      let ind -= &shiftwidth
-    endif
-
   else
     " No indentation based on keywords, let's check for tables
 
     " Add 'shiftwidth' when there are unbalanced { on the previous line
-    let prevBalance = s:OpenBracesBalance(prevline)
+    let prevBalance = s:PreviousLineBracesBalance(prevline)
     let ind += prevBalance * &shiftwidth
-
-    " Subtract 'shiftwidth' when typing } on the current line
-    " This requires 'indentkeys'.
-    let currBalance = s:BracesBalance(getline(v:lnum))
-    if currBalance < 0
-      let ind += currBalance * &shiftwidth
-    endif
-
   endif
 
+  " Subtract a 'shiftwidth' on end, else (and elseif), until
+  " This requires 'indentkeys'.
+  let midx = match(getline(v:lnum), '^\s*\%(end\|else\|until\)')
+  if midx != -1 && synIDattr(synID(v:lnum, midx + 1, 1), "name") != "luaComment"
+    let ind -= &shiftwidth
+  endif
+
+  " Subtract 'shiftwidth' when typing } on the current line
+  " This requires 'indentkeys'.
+  let currBalance = s:CurrentLineBracesBalance(getline(v:lnum))
+  echo 'currBalance' currBalance
+  if currBalance < 0
+    let ind += currBalance * &shiftwidth
+  endif
 
   return ind
 endfunction
