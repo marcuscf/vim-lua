@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	Lua script
-" Maintainer:	Marcus Aurelius Farias <marcus.cf 'at' bol.com.br>
+" Maintainer:	Marcus Aurelius Farias <masserahguard-lua 'at' yahoo com>
 " First Author:	Max Ischenko <mfi 'at' ukr.net>
-" Last Change:	2007 Jul 23
+" Last Change:	2020 Apr 11
 
 " Only load this indent file when no other was loaded.
 if exists("b:did_indent")
@@ -30,10 +30,9 @@ function s:PreviousLineBracesBalance(line)
     if a:line[idx] ==# "{"
       let depth += 1
     elseif a:line[idx] ==# "}"
-      " Avoid going below zero because
-      " a line like this
+      " Avoid going below zero because a line like this
       " }, {
-      " is not balanced and should trigger indentation below
+      " is not balanced and should trigger indentation on the line below
       let depth = depth == 0 ? 0 : depth - 1
     endif
 
@@ -44,25 +43,31 @@ function s:PreviousLineBracesBalance(line)
   return depth
 endfunction
 
-function s:CurrentLineBracesBalance(line)
+function s:CountUnindents(line)
   let idx = 0
-  let depth = 0
+  let unindents = 0
+  let indents = 0
 
   while idx < len(a:line)
 
     if a:line[idx] ==# "{"
-      " Avoid going above -1
-      " Is this really the best way?
-      let depth = depth == -1 ? -1 : depth + 1
+      " This line has an "{"
+      let indents += 1
     elseif a:line[idx] ==# "}"
-      let depth -= 1
+      if indents > 0
+        " This line had an "{" that's now closed by this "}"
+        let indents -= 1
+      else
+        " This line has an unmatched "}" so we should unindent it
+        let unindents += 1
+      endif
     endif
 
     let idx += 1
 
   endwhile
 
-  return depth
+  return unindents
 endfunction
 
 function! GetLuaIndent()
@@ -106,10 +111,9 @@ function! GetLuaIndent()
 
   " Subtract 'shiftwidth' when typing } on the current line
   " This requires 'indentkeys'.
-  let currBalance = s:CurrentLineBracesBalance(getline(v:lnum))
-  echo 'currBalance' currBalance
-  if currBalance < 0
-    let ind += currBalance * &shiftwidth
+  let unindents = s:CountUnindents(getline(v:lnum))
+  if unindents > 0
+    let ind -= unindents * &shiftwidth
   endif
 
   return ind
