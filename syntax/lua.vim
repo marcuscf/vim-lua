@@ -37,6 +37,7 @@ if lua_version >= 5
   syn keyword luaMetaMethod __add __sub __mul __div __pow __unm __concat
   syn keyword luaMetaMethod __eq __lt __le
   syn keyword luaMetaMethod __index __newindex __call
+  syn keyword luaMetaMethod __mode
 endif
 
 if lua_version > 5 || (lua_version == 5 && lua_subversion >= 1)

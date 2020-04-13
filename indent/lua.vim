@@ -92,28 +92,28 @@ function! GetLuaIndent()
     " Add 'shiftwidth' if what we found previously is not in a comment and
     " an "end" or "until" is not present on the same line.
     if synIDattr(synID(prevlnum, midx + 1, 1), "name") != "luaComment" && prevline !~ '\<end\>\|\<until\>'
-      let ind += &shiftwidth
+      let ind += shiftwidth()
     endif
   else
     " No indentation based on keywords, let's check for tables
 
     " Add 'shiftwidth' when there are unbalanced { on the previous line
     let prevBalance = s:PreviousLineBracesBalance(prevline)
-    let ind += prevBalance * &shiftwidth
+    let ind += prevBalance * shiftwidth()
   endif
 
-  " Subtract a 'shiftwidth' on end, else (and elseif), until
+  " Subtract a 'shiftwidth' on end, else, elseif, until
   " This requires 'indentkeys'.
   let midx = match(getline(v:lnum), '^\s*\%(end\|else\|until\)')
   if midx != -1 && synIDattr(synID(v:lnum, midx + 1, 1), "name") != "luaComment"
-    let ind -= &shiftwidth
+    let ind -= shiftwidth()
   endif
 
   " Subtract 'shiftwidth' when typing } on the current line
   " This requires 'indentkeys'.
   let unindents = s:CountUnindents(getline(v:lnum))
   if unindents > 0
-    let ind -= unindents * &shiftwidth
+    let ind -= unindents * shiftwidth()
   endif
 
   return ind
