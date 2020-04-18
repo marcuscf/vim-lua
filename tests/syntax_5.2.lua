@@ -49,20 +49,14 @@
 alo
 123"]==]
 
-    '\a\b\f\n\r\t\v\\\"\'\077\x4d\u{015d}'
+    '\a\b\f\n\r\t\v\\\"\'\077\x4d'
 
--- integer constants
-    3   345   0xff   0xBEBADA
-
--- float constants
-    3.0     3.1416     314.16e-2     0.31416E1     34e1
-    0x0.1E  0xA23p-4   0X1.921FB54442D18P+1
+-- numeric constants
+    3       3.0     3.1416     314.16e-2     0.31416E1
+    0xff    0x0.1E  0xA23p-4   0X1.921FB54442D18P+1
 
 -- arithmetic operators
-    + - * / // % ^
-
--- bitwise operators
-    & | ~ >> <<
+    + - * / % ^
 
 -- relational operators
     == ~= < > <= >=
@@ -97,13 +91,6 @@ alo
     __mod
     __pow
     __unm
-    __idiv
-    __band
-    __bor
-    __bxor
-    __bnot
-    __shl
-    __shr
     __concat
     __len
     __eq
@@ -147,9 +134,22 @@ alo
     type
     xpcall
 
+--  bit32
+    bit32.arshift
+    bit32.band
+    bit32.bnot
+    bit32.bor
+    bit32.btest
+    bit32.bxor
+    bit32.extract
+    bit32.lrotate
+    bit32.lshift
+    bit32.replace
+    bit32.rrotate
+    bit32.rshift
+
 --  coroutine
     coroutine.create
-    coroutine.isyieldable
     coroutine.resume
     coroutine.running
     coroutine.status
@@ -202,29 +202,31 @@ alo
     math.acos
     math.asin
     math.atan
+    math.atan2
     math.ceil
     math.cos
+    math.cosh
     math.deg
     math.exp
     math.floor
     math.fmod
+    math.frexp
     math.huge
+    math.ldexp
     math.log
     math.max
-    math.maxinteger
     math.min
-    math.mininteger
     math.modf
     math.pi
+    math.pow
     math.rad
     math.random
     math.randomseed
     math.sin
+    math.sinh
     math.sqrt
     math.tan
-    math.tointeger
-    math.type
-    math.ult
+    math.tanh
 
 --  os
     os.clock
@@ -260,27 +262,15 @@ alo
     string.len
     string.lower
     string.match
-    string.pack
-    string.packsize
     string.rep
     string.reverse
     string.sub
-    string.unpack
     string.upper
 
 --  table
     table.concat
     table.insert
-    table.move
     table.pack
     table.remove
     table.sort
     table.unpack
-
---  utf8
-    utf8.char
-    utf8.charpattern
-    utf8.codepoint
-    utf8.codes
-    utf8.len
-    utf8.offset
