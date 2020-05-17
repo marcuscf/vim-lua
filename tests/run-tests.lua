@@ -55,6 +55,7 @@ end
 local file_names = {
     {'01_IN_indent.lua', '01_OUT_indent.lua', '01_expected_indent.lua'},
     {'02_IN_indent.lua', '02_OUT_indent.lua', '02_expected_indent.lua'},
+    {'03_IN_indent.lua', '03_OUT_indent.lua', '03_expected_indent.lua'},
 }
 
 for i, v in ipairs(file_names) do
