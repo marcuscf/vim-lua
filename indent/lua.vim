@@ -14,7 +14,7 @@ setlocal indentexpr=GetLuaIndent()
 
 " To make Vim call GetLuaIndent() when it finds '\s*end' or '\s*until'
 " on the current line ('else' is default and includes 'elseif').
-setlocal indentkeys+=0=end,0=until,}
+setlocal indentkeys+=0=end,0=until,0=}
 
 " Only define the function once.
 if exists("*GetLuaIndent")
@@ -22,33 +22,75 @@ if exists("*GetLuaIndent")
 endif
 
 function s:PreviousLineBracesBalance(line)
+  if a:line =~# '^\s*\(} \=\)\+\s*$'
+    " } results in the same indentation on the line below (it's unindented immediately when typed)
+    return 0
+  endif
+
   let idx = 0
-  let depth = 0
+  let indents = 0
+  let unindents = 0
+  let indentIdx = -1
+  let whitespaceOnly = 1
 
   while idx < len(a:line)
 
+    " echomsg "[[" a:line[idx] "]]"
+
+    if whitespaceOnly
+      if a:line[idx] =~# '\s'
+        let indentIdx = idx
+      else
+        let whitespaceOnly = 0
+      endif
+    endif
+
     if a:line[idx] ==# "{"
-      let depth += 1
+      let indents += 1
+      echomsg "+i" indents
     elseif a:line[idx] ==# "}"
-      " Avoid going below zero because a line like this
-      " }, {
-      " is not balanced and should trigger indentation on the line below
-      let depth = depth == 0 ? 0 : depth - 1
+      if indents > 0
+        " cancel out an indent for the next line
+        let indents -= 1
+        echomsg "-i" indents
+      elseif indentIdx != idx - 1
+        " add an unindent for the next line only if *not* at the beginning of
+        " the line
+        let unindents += 1
+        echomsg "+u" unindents
+      endif
     endif
 
     let idx += 1
 
   endwhile
 
-  return depth
+  " { ----> +1 on the line below
+  " }, { ----> +1 on the line below
+  " { } } ----> -1 on the line below
+  echomsg indents unindents
+  return indents - unindents
 endfunction
 
 function s:CountUnindents(line)
   let idx = 0
   let unindents = 0
   let indents = 0
+  let indentIdx = -1
+  let whitespaceOnly = 1
 
   while idx < len(a:line)
+
+    " echomsg "[[" a:line[idx] "]]" a:line[idx] =~# '\s'
+    if whitespaceOnly
+      if a:line[idx] =~# '\s'
+        let indentIdx = idx
+      else
+        let whitespaceOnly = 0
+      endif
+    endif
+
+    " echomsg "w" indentIdx
 
     if a:line[idx] ==# "{"
       " This line has an "{"
@@ -57,8 +99,8 @@ function s:CountUnindents(line)
       if indents > 0
         " This line had an "{" that's now closed by this "}"
         let indents -= 1
-      else
-        " This line has an unmatched "}" so we should unindent it
+      elseif indentIdx == idx - 1
+        " This line has an unmatched "}" at the beginning so we should unindent it
         let unindents += 1
       endif
     endif
@@ -67,6 +109,7 @@ function s:CountUnindents(line)
 
   endwhile
 
+  echomsg "u" unindents
   return unindents
 endfunction
 

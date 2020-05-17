@@ -9,14 +9,14 @@ function run_vim(input_file_name, output_file_name)
     local vim = 'vim -u NONE -i NONE'
 
     local vim_init = string.format([[
-        -c 'set nocompatible lazyredraw'
+        -c 'set nocompatible lazyredraw noswapfile'
         -c 'edit %s'
         -c 'source ../indent/lua.vim'
         -c 'set shiftwidth=%d expandtab']], input_file_name, shiftwidth)
 
     vim_init = string.gsub(vim_init, '%s+', ' ')
 
-    local vim_indent = [[-c 'normal ggVG=']]
+    local vim_indent = [[-c 'normal gg=G']]
 
     local vim_save = string.format([[-c 'silent! write! %s' -c 'qa!']], output_file_name)
 
