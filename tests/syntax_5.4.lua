@@ -88,7 +88,6 @@ alo
        a = t
      end
 
-
 -- metamethods
     __add
     __sub
@@ -112,6 +111,7 @@ alo
     __index
     __newindex
     __call
+    __close
     __metatable
     __mode
     __gc
@@ -148,9 +148,11 @@ alo
     tonumber
     tostring
     type
+    warn
     xpcall
 
 --  coroutine
+    coroutine.close
     coroutine.create
     coroutine.isyieldable
     coroutine.resume
@@ -168,6 +170,7 @@ alo
     debug.getregistry
     debug.getupvalue
     debug.getuservalue
+    debug.setcstacklimit
     debug.sethook
     debug.setlocal
     debug.setmetatable

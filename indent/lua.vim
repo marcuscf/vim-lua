@@ -21,7 +21,7 @@ if exists("*GetLuaIndent")
   finish
 endif
 
-function s:BracesBalance(line, mode)
+function! s:BracesBalance(line, mode)
   " a:line -> the line to be checked as a string
   " a:mode = 1 -> compute the indentation/unindentation for the next line
   " a:mode = 2 -> compute the unindentation amout for the current line
@@ -34,7 +34,7 @@ function s:BracesBalance(line, mode)
   while l:idx < len(a:line)
 
     if !l:foundIndentIdx
-      if a:line[idx] =~# '\s'
+      if a:line[l:idx] =~# '\s'
         let l:indentIdx = l:idx
       else
         let l:foundIndentIdx = 1
@@ -84,15 +84,15 @@ function! GetLuaIndent()
   " 'function', 'if', 'for', 'while', 'repeat', 'else', 'elseif'
   let l:ind = indent(l:prevlnum)
   let l:prevline = getline(l:prevlnum)
-  let l:midx = match(l:prevline, '^\s*\%(if\>\|for\>\|while\>\|repeat\>\|else\>\|elseif\>\|do\>\|then\>\)')
+  let l:midx = match(l:prevline, '^\C\s*\%(if\>\|for\>\|while\>\|repeat\>\|else\>\|elseif\>\|do\>\|then\>\)')
   if l:midx == -1
-    let l:midx = match(l:prevline, '\<function\>\s*\%(\k\|[.:]\)\{-}\s*(')
+    let l:midx = match(l:prevline, '\C\<function\>\s*\%(\k\|[.:]\)\{-}\s*(')
   endif
 
   if l:midx != -1
     " Add 'shiftwidth' if what we found previously is not in a comment and
     " an "end" or "until" is not present on the same line.
-    if synIDattr(synID(l:prevlnum, l:midx + 1, 1), "name") != "luaComment" && l:prevline !~ '\<end\>\|\<until\>'
+    if synIDattr(synID(l:prevlnum, l:midx + 1, 1), "name") != "luaComment" && l:prevline !~# '\<end\>\|\<until\>'
       let l:ind += shiftwidth()
     endif
   else
@@ -109,14 +109,15 @@ function! GetLuaIndent()
 
   " Subtract a 'shiftwidth' on end, else, elseif, until
   " This requires 'indentkeys'.
-  let l:midx = match(getline(v:lnum), '^\s*\%(end\|else\|until\)')
+  let l:currline = getline(v:lnum)
+  let l:midx = match(l:currline, '^\C\s*\%(end\|else\|until\)')
   if l:midx != -1 && synIDattr(synID(v:lnum, l:midx + 1, 1), "name") != "luaComment"
     let l:ind -= shiftwidth()
   endif
 
   " Subtract 'shiftwidth' when typing } on the current line
   " This requires 'indentkeys'.
-  let l:unindents = s:BracesBalance(getline(v:lnum), 2)
+  let l:unindents = s:BracesBalance(l:currline, 2)
   if l:unindents > 0
     let l:ind -= l:unindents * shiftwidth()
   endif

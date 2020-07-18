@@ -31,22 +31,30 @@ endif
 syn case match
 
 " syncing method
-syn sync minlines=100
+syn sync minlines=1000
 
 if lua_version >= 5
   syn keyword luaMetaMethod __add __sub __mul __div __pow __unm __concat
   syn keyword luaMetaMethod __eq __lt __le
   syn keyword luaMetaMethod __index __newindex __call
-  syn keyword luaMetaMethod __mode
+  syn keyword luaMetaMethod __metatable __mode __gc __tostring
 endif
 
 if lua_version > 5 || (lua_version == 5 && lua_subversion >= 1)
   syn keyword luaMetaMethod __mod __len
 endif
 
+if lua_version > 5 || (lua_version == 5 && lua_subversion >= 2)
+  syn keyword luaMetaMethod __pairs
+endif
+
 if lua_version > 5 || (lua_version == 5 && lua_subversion >= 3)
-  syn keyword luaMetaMethod __idiv
+  syn keyword luaMetaMethod __idiv __name
   syn keyword luaMetaMethod __band __bor __bxor __bnot __shl __shr
+endif
+
+if lua_version > 5 || (lua_version == 5 && lua_subversion >= 4)
+  syn keyword luaMetaMethod __close
 endif
 
 " catch errors caused by wrong parenthesis and wrong curly brackets or
@@ -219,6 +227,9 @@ elseif lua_version == 5
 
     if lua_subversion >= 3
       syn match luaFunc /\<coroutine\.isyieldable\>/
+    endif
+    if lua_subversion >= 4
+      syn match luaFunc /\<coroutine\.close\>/
     endif
     syn match luaFunc /\<coroutine\.running\>/
   endif
