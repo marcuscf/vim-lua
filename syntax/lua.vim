@@ -229,6 +229,7 @@ elseif lua_version == 5
       syn match luaFunc /\<coroutine\.isyieldable\>/
     endif
     if lua_subversion >= 4
+      syn keyword luaFunc warn
       syn match luaFunc /\<coroutine\.close\>/
     endif
     syn match luaFunc /\<coroutine\.running\>/
@@ -402,6 +403,9 @@ elseif lua_version == 5
       syn match luaFunc /\<debug\.setuservalue\>/
       syn match luaFunc /\<debug\.upvalueid\>/
       syn match luaFunc /\<debug\.upvaluejoin\>/
+    endif
+    if lua_subversion >= 4
+      syn match luaFunc /\<debug.setcstacklimit\>/
     endif
   endif
 endif
