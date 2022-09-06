@@ -112,11 +112,11 @@ endif
 syn keyword luaTodo            contained TODO FIXME XXX
 syn match   luaComment         "--.*$" contains=luaTodo,@Spell
 if lua_version == 5 && lua_subversion == 0
-  syn region luaComment        matchgroup=luaComment start="--\[\[" end="\]\]" contains=luaTodo,luaInnerComment,@Spell
+  syn region luaComment        matchgroup=luaCommentDelimiter start="--\[\[" end="\]\]" contains=luaTodo,luaInnerComment,@Spell
   syn region luaInnerComment   contained transparent start="\[\[" end="\]\]"
 elseif lua_version > 5 || (lua_version == 5 && lua_subversion >= 1)
   " Comments in Lua 5.1: --[[ ... ]], [=[ ... ]=], [===[ ... ]===], etc.
-  syn region luaComment        matchgroup=luaComment start="--\[\z(=*\)\[" end="\]\z1\]" contains=luaTodo,@Spell
+  syn region luaComment        matchgroup=luaCommentDelimiter start="--\[\z(=*\)\[" end="\]\z1\]" contains=luaTodo,@Spell
 endif
 
 " first line may start with #!
@@ -131,7 +131,7 @@ endif
 syn match  luaSpecial contained #\\[\\abfnrtv'"[\]]\|\\[[:digit:]]\{,3}#
 if lua_version == 5
   if lua_subversion == 0
-    syn region luaString2 matchgroup=luaString start=+\[\[+ end=+\]\]+ contains=luaString2,@Spell
+    syn region luaString2 matchgroup=luaStringDelimiter start=+\[\[+ end=+\]\]+ contains=luaString2,@Spell
   else
     if lua_subversion >= 2
       syn match  luaSpecial contained #\\z\|\\x[[:xdigit:]]\{2}#
@@ -139,11 +139,11 @@ if lua_version == 5
     if lua_subversion >= 3
       syn match  luaSpecial contained #\\u{[[:xdigit:]]\+}#
     endif
-    syn region luaString2 matchgroup=luaString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
+    syn region luaString2 matchgroup=luaStringDelimiter start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
   endif
 endif
-syn region luaString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=luaSpecial,@Spell
-syn region luaString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Spell
+syn region luaString matchgroup=luaStringDelimiter start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=luaSpecial,@Spell
+syn region luaString matchgroup=luaStringDelimiter start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Spell
 
 " integer number
 syn match luaNumber "\<\d\+\>"
@@ -415,6 +415,7 @@ hi def link luaRepeat		Repeat
 hi def link luaFor		Repeat
 hi def link luaString		String
 hi def link luaString2		String
+hi def link luaStringDelimiter	luaString
 hi def link luaNumber		Number
 hi def link luaOperator		Operator
 hi def link luaSymbolOperator	luaOperator
@@ -424,6 +425,7 @@ hi def link luaCondElse		Conditional
 hi def link luaFunction		Function
 hi def link luaMetaMethod	Function
 hi def link luaComment		Comment
+hi def link luaCommentDelimiter	luaComment
 hi def link luaTodo		Todo
 hi def link luaTable		Structure
 hi def link luaError		Error
