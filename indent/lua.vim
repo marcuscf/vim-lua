@@ -18,6 +18,8 @@ setlocal indentkeys+=0=end,0=until
 
 setlocal autoindent
 
+let b:undo_indent = "setlocal indentexpr< indentkeys<"
+
 " Only define the function once.
 if exists("*GetLuaIndent")
   finish
