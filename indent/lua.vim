@@ -16,6 +16,8 @@ setlocal indentexpr=GetLuaIndent()
 " on the current line ('else' is default and includes 'elseif').
 setlocal indentkeys+=0=end,0=until,0=}
 
+let b:undo_indent = "setlocal indentexpr< indentkeys<"
+
 " Only define the function once.
 if exists("*GetLuaIndent")
   finish
